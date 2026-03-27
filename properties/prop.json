@@ -106,30 +106,5 @@
       "train_negative_ratio": 19,
       "edge_existence": false,
       "homogenization": false
-    },
-    "qa": {
-      "model_path": "/data/dpasquini/test_output/classic/model/best_model.pt",
-      "output_model_dir": "/data/dpasquini/test_output/classic/model_qa",
-      "dataset_path": "/data/dpasquini/test_output/classic/embeddings",
-      "questions_path": "/data/dpasquini/test_output/classic/questions_w_ids",
-      "file_pattern_graphs": "hetero_graph.{graph_id}.pt",
-      "file_pattern_questions": "structural_questions.{graph_id}.json",
-      "is_structural": true,
-      "num_seeds": 2,
-      "node_type_seeds": [],
-      "n_hop": 1, 
-      "k_max": 50
-    },
-    "generate_structural_questions": {
-      "input_dir": "/data/dpasquini/test_output/classic/embeddings",
-      "output_dir": "/data/dpasquini/test_output/classic/questions_w_ids",
-      "file_pattern_nodes": "nodes_meta.{graph_id}.feather",
-      "file_pattern_edges": "edges_meta.{graph_id}.feather",
-      "is_directed": true,
-      "without_labels": true,
-      "num_node_q": 10,
-      "num_node_label_q": 10,
-      "nhop_counts": {"1": 10, "2": 10, "3": 10},
-      "num_processes": 12
     }
 }

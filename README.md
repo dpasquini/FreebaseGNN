@@ -21,11 +21,6 @@ Implemented and wired tasks in `Main.py`:
 9. `embeddings_generation`
 10. `gnn_training`
 
-Present in config but not currently executed in `Main.py`:
-
-1. `qa`
-2. `generate_structural_questions`
-
 ## Project Layout
 
 ```
