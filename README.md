@@ -1,109 +1,136 @@
-# FreebaseQA Graph Processing Pipeline
+# Linguistic Initialization for Inductive Reasoning in Heterogeneous Knowledge Graphs
 
-FreebaseQA is a comprehensive framework designed for performing Question Answering (QA) tasks over Freebase knowledge graphs. The project implements a multi-stage pipeline that ingests raw Freebase data, constructs and enhances graph structures, leverages Large Language Models (LLMs) for semantic enrichment, and trains Graph Neural Networks (GNNs) for advanced link prediction and reasoning.
+Codebase for the paper accepted at the LREC 2026 Workshop on Knowledge Graphs and Large Language Models (KG-LLM).
 
-## Features
+This repository implements a configurable pipeline over Freebase-derived graphs, combining graph processing, LLM-based enrichment, embedding generation, and GNN training/evaluation.
 
-The pipeline consists of several modular components controlled via a configuration file:
+## What This Repository Currently Runs
 
-1.  **Graph Construction & Typing**: Extracts subgraphs from Freebase and resolves entity types and literals.
-2.  **Graph Enhancement**: Enriches graphs with additional structural information and resolves "bridge" nodes to connect distant entities.
-3.  **Prompt Engineering**: Automatically generates prompts for nodes and edges to elicit semantic descriptions.
-4.  **LLM Inference**: Integrates with **vLLM** and HuggingFace models (e.g., Gemma) to generate high-quality text descriptions for graph elements.
-5.  **Embedding Generation**: Converts textual descriptions and graph structures into vector embeddings (Multihot, etc.).
-6.  **GNN Training**: Trains Heterogeneous Graph Attention Networks (**HeteroGAT**) for link prediction tasks.
-7.  **Evaluation**: Includes a robust evaluation suite compatible with PyTorch Geometric.
+The execution flow is controlled by `to_do` flags in `properties/prop.json` and orchestrated by `Main.py`.
 
-## Project Structure
+Implemented and wired tasks in `Main.py`:
+
+1. `retrieve_types_literals`
+2. `typed_graphs`
+3. `enhance_graphs`
+4. `enhance_with_bridges`
+5. `create_prompts`
+6. `create_bridge_types_index`
+7. `compute_stats`
+8. `llm_inference`
+9. `embeddings_generation`
+10. `gnn_training`
+
+Present in config but not currently executed in `Main.py`:
+
+1. `qa`
+2. `generate_structural_questions`
+
+## Project Layout
 
 ```
-FreebaseQA/
-├── algorithms/       # Core graph processing algorithms (Construction, Enhancement, Indexing)
-├── gnn/              # Graph Neural Network modules
-│   ├── model/        # GNN architectures (HeteroGAT, LinkPredictor)
-│   ├── train/        # Training loops and logic
-│   ├── preprocess/   # Data loading and transformation (PyG HeteroData)
-│   └── evaluation/   # Scorers and Evaluators
-├── llm/              # LLM integration components
-│   ├── LLMInference.py # Inference orchestration
-│   └── LLMService.py   # vLLM service wrapper
-├── properties/       # Configuration files
-│   └── prop.json     # Main pipeline configuration
-├── stats/            # Statistical analysis tools
-├── utils/            # Helper utilities (IO, Text processing, Tensors)
-└── Main.py           # Application Entry Point
+FreebaseGNN/
+|-- algorithms/
+|   |-- GraphConstruction.py
+|   |-- GraphEnhance.py
+|   |-- PromptCreation.py
+|   `-- CreateIndex.py
+|-- gnn/
+|   |-- EmbeddingGraphs.py
+|   |-- preprocess/
+|   |-- model/
+|   |-- train/
+|   `-- evaluation/
+|-- llm/
+|   |-- LLMInference.py
+|   `-- LLMService.py
+|-- stats/
+|-- utils/
+|-- properties/
+|   `-- prop.json
+`-- Main.py
 ```
 
-## 🛠️ Installation & Requirements
+## Requirements
 
-The project relies on Python (>3.8) and several key libraries for deep learning and graph processing.
+Recommended environment:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-repo/FreebaseQA.git
-    cd FreebaseQA
-    ```
+1. Python 3.9+
+2. PyTorch + PyTorch Geometric
+3. transformers
+4. vllm (if running LLM inference through vLLM)
+5. pandas
+6. pyarrow and/or fastparquet
+7. tqdm
 
-2.  **Install Dependencies:**
-    It is recommended to use a Conda environment. Key dependencies include:
-    *   `torch`
-    *   `torch_geometric` (PyG)
-    *   `vllm`
-    *   `transformers`
-    *   `pandas`
-    *   `tqdm`
-    *   `fastparquet` / `pyarrow`
-
-    *(Note: Ensure your CUDA version matches the Torch installation for GPU support).*
+Install with your preferred environment manager (venv/conda).
 
 ## Configuration
 
-The pipeline is entirely driven by the `properties/prop.json` file. This JSON file controls which steps of the pipeline are executed and provides the necessary paths and parameters for each step.
+All pipeline behavior is driven by `properties/prop.json`.
 
-### The `to_do` Block
-The `to_do` section in `prop.json` acts as a switchboard:
+### Task Switches (`to_do`)
+
+Example:
 
 ```json
 "to_do": {
-  "retrieve_types_literals": false,  // Step 1: Raw data extraction
-  "typed_graphs": false,             // Step 2: Build typed graphs
-  "enhance_graphs": false,           // Step 3: Add external knowledge
-  "create_prompts": false,           // Step 4: Generate LLM prompts
-  "llm_inference": true,             // Step 5: Run LLM on prompts
-  "embeddings_generation": true,     // Step 6: Create embeddings from text
-  "gnn_training": true               // Step 7: Train GNN model
+  "retrieve_types_literals": false,
+  "typed_graphs": false,
+  "enhance_graphs": false,
+  "enhance_with_bridges": false,
+  "create_prompts": false,
+  "create_bridge_types_index": false,
+  "compute_stats": false,
+  "llm_inference": false,
+  "embeddings_generation": false,
+  "gnn_training": false,
+  "qa": false,
+  "generate_structural_questions": false
 }
 ```
 
-### Module Configuration
-Each step has a corresponding configuration block in `prop.json` (e.g., `"gnn_training"`, `"llm_inference"`) where you specify input/output directories and model hyperparameters (learning rate, epochs, embedding dimensions, etc.).
+### Config Blocks Used by the Pipeline
 
-## ▶️ How to Run
+Depending on enabled tasks, `Main.py` reads:
 
-To run the pipeline, simply execute the `Main.py` script. By default, it looks for `properties/prop.json`.
+1. `typed_graphs`
+2. `enhance_graphs`
+3. `prompted_graph`
+4. `type_index`
+5. `stats`
+6. `llm`
+7. `llm_inference`
+8. `embeddings_generation`
+9. `gnn_training`
+
+Note:
+
+1. Keep secrets out of the repository. Do not store tokens directly in `prop.json`.
+2. Pass sensitive values through environment variables or a local ignored config.
+
+## Run
+
+From repository root:
 
 ```bash
 python Main.py --properties properties/prop.json
 ```
 
-### Running Specific Modules
-To run only specific parts of the pipeline (e.g., only **GNN Training**), modify the `properties/prop.json` file:
+To run a single stage, set only the corresponding `to_do` flag to `true` and keep others `false`.
 
-1.  Open `properties/prop.json`.
-2.  Set `"gnn_training": true` inside the `"to_do"` block.
-3.  Set all other steps to `false`.
-4.  Run `python Main.py`.
+## GNN Training and Evaluation
 
-## GNN Model Details
+The `gnn_training` stage includes:
 
-The project implements a **Heterogeneous Graph Attention Network (HeteroGAT)**.
-*   **Encoders**: Handles diverse node types (Entities, Types, etc.) with specific embedding strategies (Multihot, Textual).
-*   **Training**: Supports stochastic sampling for large graphs and negative sampling for link prediction.
-*   **Predictor**: Uses a Link Predictor or MLP to score edge existence.
+1. Data preparation via `GNNDataProcessor`
+2. Baseline MLP training
+3. GNN training through `GNNTraining`
+4. Evaluation with multiple scorers:
+   - Cosine baseline
+   - MLP baseline
+   - GNN scorer
 
-## 🤖 LLM Integration
+## Authors
 
-The `LLMInference` module leverages **vLLM** for high-throughput inference. It supports batch processing of graph nodes/edges to generate descriptions, which are then used to enrich the initial node embeddings for the GNN.
-
----
-*Author: Daniele Pasquini, Danilo Croce, Roberto Basili*
+Daniele Pasquini, Danilo Croce, Roberto Basili
