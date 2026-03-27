@@ -1,0 +1,135 @@
+{
+    "type_strategy": "classic",
+    "to_do": {
+      "retrieve_types_literals": false,
+      "typed_graphs": false,
+      "enhance_graphs": false,
+      "enhance_with_bridges": false,
+      "create_prompts": false,
+      "create_bridge_types_index": false,
+      "compute_stats": false,
+      "llm_inference": false,
+      "embeddings_generation": false,
+      "gnn_training": false,
+      "qa": false,
+      "generate_structural_questions": true
+    },
+    "retrieve_types_literals": {
+      "graphs_input_file": "/ipazianas/pasquini/freebase/new/dataset/train_simple.json",
+      "resolved_nodes": "/ipazianas/pasquini/freebase/new/dataset/entities.txt",
+      "output_dir": "/scratch/pasquini/graphs_enhanced_resolved/",
+      "freebase": "/ipazianas/pasquini/freebase/freebase-rdf-latest.gz",
+      "db_path": "/scratch/pasquini/db/freebase_index.sql"
+    },
+    "typed_graphs": {
+      "graphs_input_file": "/ipazianas/pasquini/freebase/new/dataset/train_simple.json",
+      "resolved_predicates": "/ipazianas/pasquini/freebase/new/dataset/relations.txt",
+      "resolved_nodes": "/ipazianas/pasquini/freebase/new/dataset/entities.txt",
+      "output_dir": "/scratch/pasquini/test_typed_graphs_4/",
+      "types_literals_file": null,
+      "literals_db_path": "/ipazianas/pasquini/freebase/freebase/freebase_literals.sql",
+      "types_db_path": "/ipazianas/pasquini/freebase/db/freebase_index.sql",
+      "test_graphs": 1,
+      "num_processes": 12
+    },
+    "enhance_graphs": {
+      "output_dir": "/scratch/pasquini/test_enhanced_graphs_4/",
+      "num_processes": 12,
+      "typed_graphs_dir": "/scratch/pasquini/test_typed_graphs_4/",
+      "enhanced_graphs_dir": "/scratch/pasquini/test_enhanced_graphs_4/",
+      "entities_db_path": "/ipazianas/pasquini/freebase/db/freebase_index.sql",
+      "literals_db_path": "/ipazianas/pasquini/freebase/freebase/freebase_literals.sql",
+      "types_db_path": "/ipazianas/pasquini/freebase/db/freebase_index.sql"
+    },
+    "prompted_graph": {
+      "output_dir": "/scratch/pasquini/test_prompted_graphs_4/",
+      "num_processes": 12,
+      "checkpoint_dir": "/scratch/pasquini/test_checkpoint_4/",
+      "graphs_to_prompt_dir": "/scratch/pasquini/test_enhanced_graphs_4/",
+      "sample_sizes": {"i": 5, "o": 5},
+      "entities_db_path": "/ipazianas/pasquini/freebase/db/freebase_index.sql",
+      "bridge_types_db_path": "/scratch/pasquini/db_type_index_4/type_index.sql",
+      "graph_prefix_filename": "bridge_enhanced_graph"
+    },
+    "type_index": {
+        "index_path": "/scratch/pasquini/db_type_index_4/",
+        "input_graphs_path": "/scratch/pasquini/prj_enhanced_graphs_4/",
+        "literals_db_path": "/scratch/pasquini/db_literals_full/freebase_literals.sql",
+        "graph_prefix_filename": "bridge_enhanced_graph"
+      },
+    "stats": {
+      "input_dir": "/scratch/pasquini/prj_enhanced_graphs_4/",
+      "output_dir": "/scratch/pasquini/prj_stats_4/"
+    },
+    "llm": {
+      "huggingface_token": "",
+      "model": "google/gemma-2b-it"
+    },
+    "llm_inference": {
+      "input_dir_nodes": "/data/dpasquini/test_input/classic",
+      "input_dir_edges": "/data/dpasquini/test_input/classic",
+      "output_dir_nodes": "/data/dpasquini/test_output/classic",
+      "output_dir_edges": "/data/dpasquini/test_output/classic",
+      "file_pattern_nodes": "prompted_graph.nodes.{graph_id}.parquet",
+      "file_pattern_edges": "prompted_graph.edges.{graph_id}.parquet",
+      "file_pattern_graphs": "prompted_graph.graph.{graph_id}.json"
+    },
+    "embeddings_generation": {
+      "output_dir": "/data/dpasquini/test_output/simplename/embeddings",
+      "input_dir": "/data/dpasquini/test_output/simplename",
+      "file_pattern_nodes": "full_graph.nodes.{graph_id}.parquet",
+      "file_pattern_edges": "full_graph.edges.{graph_id}.parquet",
+      "embedding_dim": 768,
+      "save_embeddings": true,
+      "compute_types_vocab": true
+    },
+    "gnn_training": {
+      "input_dir": "/data/dpasquini/test_output/classic/embeddings",
+      "output_model_dir": "/data/dpasquini/test_output/classic/model/h768",
+      "file_pattern": "hetero_graph.{graph_id}.pt",
+      "train_test_split": 0.8,
+      "gnn_model": "HeteroGAT",
+      "predictor_model": "LinkPredictor",
+      "num_epochs": 10,
+      "learning_rate": 5e-4,
+      "embedding_dim": 768,
+      "weight_decay": 5e-4,
+      "num_heads": 4,
+      "dropout": 0.2,
+      "hidden_dim": 256,
+      "num_layers": 2,
+      "early_stopping_patience": 10,
+      "random_initialization": false,
+      "max_positive_edge": 256,
+      "stochastic_sampling": true,
+      "max_rel_per_graph": 8,
+      "train_negative_ratio": 19,
+      "edge_existence": false,
+      "homogenization": false
+    },
+    "qa": {
+      "model_path": "/data/dpasquini/test_output/classic/model/best_model.pt",
+      "output_model_dir": "/data/dpasquini/test_output/classic/model_qa",
+      "dataset_path": "/data/dpasquini/test_output/classic/embeddings",
+      "questions_path": "/data/dpasquini/test_output/classic/questions_w_ids",
+      "file_pattern_graphs": "hetero_graph.{graph_id}.pt",
+      "file_pattern_questions": "structural_questions.{graph_id}.json",
+      "is_structural": true,
+      "num_seeds": 2,
+      "node_type_seeds": [],
+      "n_hop": 1, 
+      "k_max": 50
+    },
+    "generate_structural_questions": {
+      "input_dir": "/data/dpasquini/test_output/classic/embeddings",
+      "output_dir": "/data/dpasquini/test_output/classic/questions_w_ids",
+      "file_pattern_nodes": "nodes_meta.{graph_id}.feather",
+      "file_pattern_edges": "edges_meta.{graph_id}.feather",
+      "is_directed": true,
+      "without_labels": true,
+      "num_node_q": 10,
+      "num_node_label_q": 10,
+      "nhop_counts": {"1": 10, "2": 10, "3": 10},
+      "num_processes": 12
+    }
+}
